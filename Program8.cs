@@ -108,6 +108,13 @@ namespace CSHttpClientSample
                     Console.WriteLine(Title);
                 }
             }
+            //System.IO.File.WriteAllLines(@"C:\Users\Admin\Downloads\testapi\WriteLines.txt", data1);
+            //System.IO.File.WriteAllText(@"C:\Users\Admin\Downloads\testapi\WriteText.txt", data1);
+            System.IO.StreamWriter file1 = new System.IO.StreamWriter(@"C:\Users\Admin\Downloads\testapi\WriteLines2.txt");
+            file1.WriteLine(data1);
+            file1.Close();
+            System.IO.StreamWriter file2 = new System.IO.StreamWriter(@"C:\Users\Admin\Downloads\testapi\WriteLines2.txt", true);
+            file2.WriteLine(data1);
         }
     }
 }
