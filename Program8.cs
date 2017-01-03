@@ -17,24 +17,29 @@ namespace CSHttpClientSample
         private static string NewsSearch = "https://api.cognitive.microsoft.com/bing/v5.0/news/search";
         private static string Search = "https://api.cognitive.microsoft.com/bing/v5.0/search";
         //private static string Search = "https://api.cognitive.microsoft.com/bing/v5.0/web/search";
+        static string key = "";
         //WebUtility.UrlEncode(query)
         static void Main()
         {
-            string key = Console.ReadLine();
-            //makenewsrequest(key);
-            makewebrequest(key);
+            //string query = Console.ReadLine();
+            //makenewsrequest(query);
+            string[] key1 = System.IO.File.ReadAllLines(@"C:\Users\Admin\Desktop\keys.txt");
+            key = key1[0];
+            System.IO.StreamReader file = new System.IO.StreamReader(@"C:\Users\Admin\Downloads\testapi\queries.txt");
+            string line = file.ReadLine();
+            makewebrequest(line);
             Console.WriteLine("Hit ENTER to exit...");
             Console.ReadLine();
         }
 
-        static async void makenewsrequest(string key2)
+        static async void makenewsrequest(string q)
         {
             var client = new HttpClient();
-            string query = "Soros";
+            string query = q;
             int count = 20;
             int offset = 0;
             string market = "en-US";
-            string key = key2;
+            //string key = key2;
 
             //var queryString = HttpUtility.ParseQueryString(string.Empty);
             var queryString = WebUtility.UrlEncode(query);
@@ -66,15 +71,15 @@ namespace CSHttpClientSample
                 }
             }
         }
-        static async void makewebrequest(string key2)
+        static async void makewebrequest(string q)
         {
             var client = new HttpClient();
-            string query = "Soros";
+            string query = q;
             int count = 20;
             int offset = 0;
             string market = "en-US";
             string responseFilter = "Webpages";
-            string key = key2;
+            //string key = key2;
 
             //var queryString = HttpUtility.ParseQueryString(string.Empty);
             var queryString = WebUtility.UrlEncode(query);
@@ -110,11 +115,11 @@ namespace CSHttpClientSample
             }
             //System.IO.File.WriteAllLines(@"C:\Users\Admin\Downloads\testapi\WriteLines.txt", data1);
             //System.IO.File.WriteAllText(@"C:\Users\Admin\Downloads\testapi\WriteText.txt", data1);
-            System.IO.StreamWriter file1 = new System.IO.StreamWriter(@"C:\Users\Admin\Downloads\testapi\WriteLines2.txt");
-            file1.WriteLine(data1);
-            file1.Close();
-            System.IO.StreamWriter file2 = new System.IO.StreamWriter(@"C:\Users\Admin\Downloads\testapi\WriteLines2.txt", true);
-            file2.WriteLine(data1);
+            //System.IO.StreamWriter file1 = new System.IO.StreamWriter(@"C:\Users\Admin\Downloads\testapi\WriteLines2.txt");
+            //file1.WriteLine(data1);
+            //file1.Close();
+            //System.IO.StreamWriter file2 = new System.IO.StreamWriter(@"C:\Users\Admin\Downloads\testapi\WriteLines2.txt", true);
+            //file2.WriteLine(data1);
         }
     }
 }
