@@ -1,6 +1,8 @@
 ﻿using System;
 public class SnakesnLadders
 {
+	const int numberofboards = 101;
+	const int boardsize = 101;
     int pos=1,turnsofdice=0,turnsofgame=0;
 	int[] states=new int[101];
     int numberofdiceturns = 100000;
@@ -21,6 +23,19 @@ public class SnakesnLadders
 
     double gameturnmultiple = 1;
     double gametotalmultiple = 1;
+	int[,] boardstates= new int [numberofboards,boardsize];
+	int[,] boardlIndex= new int[numberofboards,boardsize];
+	int[,] boardsIndex= new int[numberofboards,boardsize];
+	int[,] boardladderHit= new int[numberofboards,12];
+	int[,] boardsnakeHit= new int[numberofboards,11];
+	int[] boardpos= new int[numberofboards];
+	int[] boardturnsofdiceforagame= new int[numberofboards];
+	int[] boardturnsofgame= new int[numberofboards];
+	//float boardgameturnmultiple[101];
+	//float boardgametotalmultiple[101];
+	double[,] boardgameturnmultiple= new double[numberofboards,31];
+	double[,] boardgametotalmultiple= new double[numberofboards,31];
+
 
 	Random r= new Random();
 	String args;
@@ -45,7 +60,8 @@ public class SnakesnLadders
         if (dice1 > dice)Console.Write("{0:G} {1:G}",dice1, dice);
         Console.Write("{0:G} \n",multiply(5, 3));
         SnakesnLadders sal=new SnakesnLadders();
-        sal.runGames();
+        //sal.runGames();
+		sal.boardrunGames();
         Console.WriteLine("hello ramesh");
     }
     public static int multiply(int m1, int m2)
@@ -55,6 +71,7 @@ public class SnakesnLadders
     }
     void runGame()
 	{
+		pos =1;
 		for (int i = 1; i<101; i++)
 	    {
 		    states[i] = 0;
@@ -80,9 +97,9 @@ public class SnakesnLadders
 	}
     void Dice()
 	{
-		int d=r.Next(0,6);
+		int d=r.Next(0,6)+1;
 		//System.out.println("dice="+d);
-		pos=pos+d+1;
+		pos=pos+d;
 		//System.out.println("position"+pos);
 		//return p;
 	}
@@ -139,7 +156,9 @@ public class SnakesnLadders
     }
     void logmultiple()
     {
-        gameturnmultiple = (((10000 - basispoint) / 10000)*(turnsasmoneytakeninx + 1))- turnsasmoneytakeninx*(1 + interest)+ ((basispoint / (turnsofdiceforagame * 350)))*(turnsasmoneytakeninx + 1);
+        gameturnmultiple = (((10000 - basispoint) / 10000)*(turnsasmoneytakeninx + 1))
+		- turnsasmoneytakeninx*(1 + interest)+ 
+		((basispoint / (turnsofdiceforagame * 350)))*(turnsasmoneytakeninx + 1);
         //gameturnmultiple = ((10000 - basispoint) / 10000) + ((basispoint / (turnsofdiceforagame * 350)));
         //printf(" gameturnmultiple %f ", gameturnmultiple);
         gametotalmultiple = gametotalmultiple * gameturnmultiple;
@@ -162,10 +181,10 @@ public class SnakesnLadders
         //printf(" gametotalmultiple %f \n", gametotalmultiple);
         Console.Write(" {0:G} \n", gametotalmultiple);
         //printf("pos= %d", pos);
-        //for (int i = 1; i <= 11; i++)
-        //Console.Write("LadderHit{0:G} {1:G} ",i, ladderHit[i]);
-        //for (int i = 1; i <= 10; i++)
-        //Console.Write("SnakeHit{0:G} {1:G}", i, snakeHit[i]);
+        for (int i = 1; i <= 11; i++)
+        Console.Write("LadderHit{0:G} {1:G} ",i, ladderHit[i]);
+        for (int i = 1; i <= 10; i++)
+        Console.Write("SnakeHit{0:G} {1:G}", i, snakeHit[i]);
     }
     void runGames()
     {
@@ -180,10 +199,196 @@ public class SnakesnLadders
             turnsofgame = 0;
         }
     }
+	void fillLaddersrand()
+	{
+		for (int i = 0; i<11; i++)
+		{
+			if (r.Next(0,6) > 2)
+			{
+				states[ladderStart[i]] = ladderEnd[i];
+				lIndex[ladderStart[i]] = i + 1;
+			}
+		}
+	}
+	void fillSnakesrand()
+	{
+		for (int i = 0; i<10; i++)
+		{
+			if (r.Next(0,6) > 2)
+			{
+				states[snakeStart[i]] = snakeEnd[i];
+				sIndex[snakeStart[i]] = i + 1;
+			}
+		}
+	}
+	void boardrunGame()
+	{
+		gameturnmultiple = 1;
+		turnsasmoneytakeninx = 0;
+		for (int h = 1; h<101; h++)
+		{
+			boardpos[h] = 1;
+			boardturnsofdiceforagame[h] = 0;
+			boardturnsofgame[h] = 0;
+			//boardgameturnmultiple[h] = 1;
+			//boardgametotalmultiple[h] = 1;
+			//commonboardgametotalmultipletakenin[h] = 0;
+			for (int i = 1; i < 31; i++)
+			{
+				//boardgameturnmultiple[h][i] = 1;
+				boardgametotalmultiple[h,i] = 0.01;
+				//if (h<2)commonboardgametotalmultipleleft[i] = 1;
+				//if (h<2)commonboardgametotalmultipleadded[i] = 1;
+			}
 
-	
+			for (int i = 1; i<101; i++)
+			{
+				boardstates[h,i] = 0;
+				boardlIndex[h,i] = 0;
+				boardsIndex[h,i] = 0;
+			}
+
+			for (int i = 1; i < 12; i++)boardladderHit[h,i] = 0;
+			for (int i = 1; i < 11; i++)boardsnakeHit[h,i] = 0;
+		}
+		boardfillLaddersrand();
+		boardfillSnakesrand();
+		while (turnsofdice<numberofdiceturns)
+		{
+			boardDice();
+			boardTurnsofDice();
+			for (int h = 1; h < 101; h++)
+			{
+				if (boardpos[h] > 100)boardnumberofGames1(h);
+			}
+			boardSnakesLadders();
+			//boardshuffleSnakesrand();
+			//boardshuffleLaddersrand();
+		}
+		//commonboardlogtotalmultiple();
+	}
+	void boardfillLaddersrand()
+	{
+		for (int h = 1; h<101; h++)
+		{
+			for (int i = 0; i<11; i++)
+			{
+				if (r.Next(0,6) > 2)
+				{
+					boardstates[h,ladderStart[i]] = ladderEnd[i];
+					boardlIndex[h,ladderStart[i]] = i + 1;
+				}
+			}
+		}
+	}
+	void boardfillSnakesrand()
+	{
+		for (int h = 1; h<101; h++)
+		{
+			for (int i = 0; i<10; i++)
+			{
+				if (r.Next(0,6) > 2)
+				{
+					boardstates[h,snakeStart[i]] = snakeEnd[i];
+					boardsIndex[h,snakeStart[i]] = i + 1;
+				}
+			}
+		}
+	}
+	void boardDice()
+	{
+		int d = r.Next(0,6) + 1;
+		for (int h = 1; h<numberofboards; h++)
+		{
+			boardpos[h] = boardpos[h] + d;
+			//printf(" %d", pos);
+		}
+	}
+	void boardTurnsofDice()
+	{
+		++turnsofdice;
+		for (int h = 1; h<numberofboards; h++)
+		{
+			boardturnsofdiceforagame[h]++;
+		}
+	}
+	void boardSnakesLadders()
+	{
+		for (int h = 1; h<numberofboards; h++)
+		{
+			if (boardstates[h,boardpos[h]] != 0)
+			{
+				if (boardlIndex[h,boardpos[h]] != 0)boardladderHit[h,boardlIndex[h,boardpos[h]]]++;
+				if (boardsIndex[h,boardpos[h]] != 0)boardsnakeHit[h,boardsIndex[h,boardpos[h]]]++;
+				//if(pos>states[pos])printf("snakehit %d",pos);
+				//if(pos<states[pos])printf("ladderhit %d",pos);
+				boardpos[h] = boardstates[h,boardpos[h]];
+			}
+		}
+	}
+	void boardlogmultiple(int h)
+	{
+		for (int i = 1; i < 11; i++)
+		{
+			turnsasmoneytakeninx = i - 1;
+			gameturnmultiple = ((10000 - basispoint) / 10000)*(turnsasmoneytakeninx + 1)
+				- turnsasmoneytakeninx*(1 + interest)
+				+ ((basispoint / (boardturnsofdiceforagame[h] * 350)))*(turnsasmoneytakeninx + 1);
+			boardgametotalmultiple[h,i] = boardgametotalmultiple[h,i] * gameturnmultiple;
+			gameturnmultiple = 1;
+		}
+		//boardgameturnmultiple[h] = ((10000 - basispoint) / 10000)*(turnsasmoneytakeninx + 1)
+		//- turnsasmoneytakeninx*(1 + interest)
+		//+ ((basispoint / (boardturnsofdiceforagame[h] * 350)))*(turnsasmoneytakeninx + 1);
+		//boardgametotalmultiple[h] = boardgametotalmultiple[h] * boardgameturnmultiple[h];
+		//boardgameturnmultiple[h] = 1;
+	}
+	void boardnumberofGames1(int h)
+	{
+		boardpos[h] = boardpos[h] - 100;
+		//System.out.println("turnsofgame="+turnsofgame);
+		//System.out.println("position="+pos);
+		boardturnsofgame[h]++;
+		//turnsasmoney = turnsasmoney*(((10000 - basispoint) / 10000) + (basispoint / (turnsofdiceforagame * 350)));
+		boardlogmultiple(h);
+		//commonboardlogmultiple(h);
+		//prefcommonboardlogmultiple(h);
+		//prefcommonboardlogmultiple1(h);
+		boardturnsofdiceforagame[h] = 0;
+		//if(turnsofgame%35==0)numberofdiceturns=numberofdiceturns+100;
+	}
+	void boardprintGameStats()
+	{
+		for (int h = 1; h<101; h++)
+		{
+			for (int i = 1; i < 11; i++)
+			{
+				Console.Write(" {0:G} ", boardgametotalmultiple[h,i]);
+			}
+			Console.Write("\n");
+			//}
+			//for (int h = 1; h < 101; h++)
+			//{
+			//for (int i = 1; i <= 11; i++)
+			//	Console.Write("{0:G}{1:G} \n", i, boardladderHit[h,i]);
+			//for (int i = 1; i <= 10; i++)
+			//	Console.Write("{0:G}{1:G} \n", i, boardsnakeHit[h,i]);
+		}
+	}
+	void boardrunGames()
+    {
+        for (int i = 0; i < 3; i++)
+        {
+            turnsasmoneytakeninx = i;
+            //printf(" turnsasmoneytakeninx %f ", turnsasmoneytakeninx);
+            Console.Write("{0:G}", turnsasmoneytakeninx);
+            boardrunGame();
+            boardprintGameStats();
+            turnsofdice = 0;
+            turnsofgame = 0;
+        }
+    }
 }
-
 /*
 #define numberofboards 101
 #define boardsize 101
